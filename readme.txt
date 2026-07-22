@@ -18,6 +18,11 @@ Star Trek Bridge Crew Repair Hull Instructions
 
 9. Try it out.  The dlls are available here if you want them:  https://www.nexusmods.com/startrekbridgecrew/mods/7 
 
+- The code will create a file an error file if something goes wrong : 'C:\\Users\\Public\\Documents\\HullRepairError.txt' 
+
+- A diagnostics file will be created so you can make sure the code is working or if you wanted to change something. 'HullRepairDiagnostics.txt'
+
+- You can call DumpAllObjects() to create a file in the same directory 'C:\\Users\\Public\\Documents\\' that will give the names of all the objects in the scene if you want to change something yourself. 
 
 
   
