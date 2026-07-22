@@ -4,11 +4,11 @@ Star Trek Bridge Crew Repair Hull Instructions
 
 2. Open UnityEngine.UI.Text
 
-3. Add the code found in RepairHullCode.Text.UI.txt file. I added it after the code for "public virtual int layoutPriority".  Do not paste the code in that function.  Paste the code after that function. 
+3. Add the code found in RepairHullCode.Text.UI.txt file. I added it after the code for "public virtual int layoutPriority".  Do not paste the code in that function.  Paste the code after that function. Look at: 'CheckStationRepair.png'.
 
 4. Open 'Sector.Spacecraft.Subsystems.HullServer  and look for BatchUpdate().  
 
-5. Add the line 'Text.CheckStationRepair(this);' to the function to call the CheckStationRepair function.  
+5. Add the line 'Text.CheckStationRepair(this);' to the function to call the 'CheckStationRepair' function.  
 
 6. Right click in the BatchUpdate() function and go to 'Edit IL Instructions'.  
 
