@@ -1,0 +1,241 @@
+		public static void CheckStationRepair(object hullServerInstance)
+		{
+			if (hullServerInstance == null)
+			{
+				return;
+			}
+			string text = "C:\\Users\\Public\\Documents\\HullRepairDiagnostics.txt";
+			try
+			{
+				GameObject gameObject = GameObject.FindWithTag("Player");
+				if (gameObject == null)
+				{
+					MonoBehaviour[] array = Object.FindObjectsOfType<MonoBehaviour>();
+					for (int i = 0; i < array.Length; i++)
+					{
+						if (array[i] != null && (array[i].GetType().Name == "PlayerSpacecraft" || array[i].GetType().Name == "PlayerPawn"))
+						{
+							gameObject = array[i].gameObject;
+							break;
+						}
+					}
+				}
+				object obj = null;
+				MonoBehaviour monoBehaviour = null;
+				MonoBehaviour[] array2 = Object.FindObjectsOfType<MonoBehaviour>();
+				for (int j = 0; j < array2.Length; j++)
+				{
+					if (array2[j] != null && (array2[j].GetType().Name == "BaseSpacecraft" || array2[j].GetType().Name == "PlayerSpacecraft"))
+					{
+						monoBehaviour = array2[j];
+						break;
+					}
+				}
+				if (monoBehaviour != null)
+				{
+					PropertyInfo property = monoBehaviour.GetType().GetProperty("GCAFAJGANIL", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+					if (property != null)
+					{
+						obj = property.GetValue(monoBehaviour, null);
+					}
+					else
+					{
+						FieldInfo[] fields = monoBehaviour.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+						for (int k = 0; k < fields.Length; k++)
+						{
+							if (fields[k] != null && (fields[k].Name == "GCAFAJGANIL" || fields[k].FieldType.Name == "GEHGMMKAIHJ" || fields[k].FieldType.Name == "Hull"))
+							{
+								obj = fields[k].GetValue(monoBehaviour);
+								if (obj != null)
+								{
+									break;
+								}
+							}
+						}
+					}
+				}
+				PropertyInfo propertyInfo = null;
+				float num = -1f;
+				float num2 = -1f;
+				if (obj != null)
+				{
+					propertyInfo = obj.GetType().GetProperty("AAHEMKKMKOH", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+					PropertyInfo property2 = obj.GetType().GetProperty("HCHPFKBAIPJ", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+					if (propertyInfo != null)
+					{
+						num = (float)propertyInfo.GetValue(obj, null);
+					}
+					if (property2 != null)
+					{
+						num2 = (float)property2.GetValue(obj, null);
+					}
+				}
+				using (StreamWriter streamWriter = new StreamWriter(text, false))
+				{
+					streamWriter.WriteLine("========================================");
+					streamWriter.WriteLine("--- MASTER HULL REPAIR DIAGNOSTIC LOG ---");
+					streamWriter.WriteLine("Timestamp: " + DateTime.Now.ToString());
+					streamWriter.WriteLine("========================================");
+					if (monoBehaviour != null)
+					{
+						streamWriter.WriteLine("[INFO]: Located Core Spacecraft Script: " + monoBehaviour.GetType().FullName);
+					}
+					if (obj != null && propertyInfo != null)
+					{
+						streamWriter.WriteLine("[SUCCESS]: Live Hull System Properties Synchronized!");
+						streamWriter.WriteLine("CURRENT LIVE HULL HP VALUE = " + num.ToString() + " / " + num2.ToString());
+					}
+					else
+					{
+						streamWriter.WriteLine("[ERROR]: Failed to intercept the live local player ship components.");
+					}
+					streamWriter.WriteLine("\n--- ENVIRONMENTAL SCAN SEQUENCE ---");
+					bool flag = false;
+					Transform[] array3 = Object.FindObjectsOfType<Transform>();
+					for (int l = 0; l < array3.Length; l++)
+					{
+						if (array3[l] != null && array3[l].gameObject != null)
+						{
+							string name = array3[l].gameObject.name;
+							string text2 = name.ToLower().Trim();
+							if (!(text2 == "space_station") && !text2.Contains("icon") && !text2.Contains("debris") && !text2.Contains("pool") && !text2.Contains("spr_") && (text2.Contains("space_station") || text2.Contains("spacestation") || text2.Contains("outpost") || text2.Contains("ship - ")))
+							{
+								flag = true;
+								float num3 = 99999f;
+								if (gameObject != null)
+								{
+									num3 = Vector3.Distance(gameObject.transform.position, array3[l].position);
+								}
+								streamWriter.WriteLine(string.Format("[FOUND STATION]: Name='{0}', Distance={1} units away.", name, num3));
+								if (num3 < 500f)
+								{
+									streamWriter.WriteLine("   -> STATUS: Inside docking range threshold (< 500)!");
+									if (obj != null && propertyInfo != null && num >= 0f)
+									{
+										if (num2 > 0f && num < num2)
+										{
+											float num4 = num + 5f * Time.deltaTime;
+											if (num4 > num2)
+											{
+												num4 = num2;
+											}
+											propertyInfo.SetValue(obj, num4, null);
+											streamWriter.WriteLine(string.Format("   -> REPAIR LOOP ACTIVE: Setting health float to {0}.", num4));
+										}
+										else if (num2 > 0f && num >= num2)
+										{
+											streamWriter.WriteLine("   -> REPAIR SKIPPED: Starship hull is already structurally pristine (100%).");
+										}
+									}
+								}
+								else
+								{
+									streamWriter.WriteLine("   -> STATUS: Out of docking range perimeter.");
+								}
+							}
+						}
+					}
+					if (!flag)
+					{
+						streamWriter.WriteLine("[WARN]: No active space structures were detected in this environment!");
+					}
+					streamWriter.WriteLine("\n========================================");
+					streamWriter.WriteLine("Diagnostic Scan Complete.");
+					streamWriter.WriteLine("========================================");
+				}
+			}
+			catch (Exception ex)
+			{
+				try
+				{
+					File.WriteAllText("C:\\Users\\Public\\Documents\\HullRepairError.txt", ex.ToString());
+				}
+				catch
+				{
+				}
+			}
+		}
+
+		// Token: 0x060004CC RID: 1228 RVA: 0x00016DB8 File Offset: 0x00014FB8
+		public static void DumpAllObjects()
+		{
+			try
+			{
+				string text = "C:\\Users\\Public\\Documents\\AllDetectedObjects.txt";
+				Transform[] array = Object.FindObjectsOfType<Transform>();
+				using (StreamWriter streamWriter = new StreamWriter(text, false))
+				{
+					streamWriter.WriteLine("========================================");
+					streamWriter.WriteLine("--- MASTER SCENE GEOMETRY OBJECT LOG ---");
+					streamWriter.WriteLine("Timestamp: " + DateTime.Now.ToString());
+					streamWriter.WriteLine("Total Transforms Scanned: " + array.Length.ToString());
+					streamWriter.WriteLine("========================================");
+					for (int i = 0; i < array.Length; i++)
+					{
+						if (array[i] != null && array[i].gameObject != null)
+						{
+							streamWriter.WriteLine(array[i].gameObject.name);
+						}
+					}
+					streamWriter.WriteLine("========================================");
+					streamWriter.WriteLine("Scan Sequence Completed.");
+					streamWriter.WriteLine("========================================");
+				}
+			}
+			catch (Exception)
+			{
+			}
+		}
+
+		// Token: 0x060004CD RID: 1229 RVA: 0x00016EC4 File Offset: 0x000150C4
+		public static float RunHullRepairFormula(float currentHP, float elapsedFrameTime)
+		{
+			if (currentHP < 0f)
+			{
+				return currentHP;
+			}
+			float num = currentHP + 1f * elapsedFrameTime;
+			if (num > 1782f)
+			{
+				num = 1782f;
+			}
+			return num;
+		}
+
+		// Token: 0x060004CE RID: 1230 RVA: 0x00016EF4 File Offset: 0x000150F4
+		public static void RunTrueHullRepair(object targetHullComponent, float elapsedFrameTime, StreamWriter logWriter)
+		{
+			if (targetHullComponent == null)
+			{
+				return;
+			}
+			try
+			{
+				PropertyInfo property = targetHullComponent.GetType().GetProperty("HCHPFKBAIPJ", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				PropertyInfo property2 = targetHullComponent.GetType().GetProperty("AAHEMKKMKOH", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				if (property != null && property2 != null)
+				{
+					float num = (float)property.GetValue(targetHullComponent, null);
+					float num2 = (float)property2.GetValue(targetHullComponent, null);
+					logWriter.WriteLine(string.Format("   -> REAL HULL TELEMETRY: Current={0}, Max={1}", num, num2));
+					if (num < num2)
+					{
+						float num3 = num + 1f * elapsedFrameTime;
+						if (num3 > num2)
+						{
+							num3 = num2;
+						}
+						property.SetValue(targetHullComponent, num3, null);
+						logWriter.WriteLine(string.Format("   -> REPAIR ACTIVATED: Incrementing real health to {0}", num3));
+					}
+					else
+					{
+						logWriter.WriteLine("   -> REPAIR SKIPPED: Starship hull is already at 100% maximum capacity.");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				logWriter.WriteLine("[ERROR]: Failed running the true hull repair execution pass: " + ex.Message);
+			}
+		}

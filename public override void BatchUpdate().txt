@@ -1,0 +1,5 @@
+public override void BatchUpdate()
+{
+	base.BatchUpdate();
+	Text.CheckStationRepair(this);
+}
